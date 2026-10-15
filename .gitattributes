@@ -1,0 +1,3 @@
+# 安装脚本按原样保存：.bat 必须是 CRLF，.ps1 必须保留 BOM
+*.bat -text
+*.ps1 -text
