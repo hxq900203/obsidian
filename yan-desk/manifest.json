@@ -1,0 +1,9 @@
+{
+  "id": "yan-desk",
+  "name": "砚台 · 工作台",
+  "version": "1.0.0",
+  "minAppVersion": "1.5.0",
+  "description": "打开 Obsidian 先看到的工作台：日签（日期、农历、节气、天气）、记一笔、待办、月历、最近在写、墨迹和常用入口。",
+  "author": "Yan",
+  "isDesktopOnly": false
+}

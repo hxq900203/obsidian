@@ -1,0 +1,669 @@
+/* 砚台 · 工作台
+ * 配合「砚」主题效果最好；换成别的主题也能用，字体和阴影会退回主题自带的样子。 */
+
+.yan-desk-view {
+  container-type: inline-size;
+}
+
+.yan-desk {
+  --yd-serif: var(--yan-serif, var(--font-text));
+  --yd-kai: var(--yan-kai, var(--font-text));
+  --yd-sheet-shadow: var(--yan-sheet-shadow, 0 1px 3px rgba(0, 0, 0, 0.08), 0 12px 32px -14px rgba(0, 0, 0, 0.25));
+  --yd-chip-shadow: var(--yan-chip-shadow, 0 0 0 1px var(--background-modifier-border));
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 30px 40px 48px;
+  color: var(--text-normal);
+  font-family: var(--font-interface);
+  font-size: 14px;
+}
+
+.yan-desk a {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.yan-desk :is(a, button, [role="button"]):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 60%, transparent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- 问候、记一笔 ---------- */
+
+.yd-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.yd-greet {
+  font-family: var(--yd-serif);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+
+.yd-motto {
+  margin-top: 6px;
+  font-family: var(--yd-kai);
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.yd-motto span {
+  margin-inline-start: 10px;
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+.yd-capture {
+  flex: 0 1 380px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 7px 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--background-modifier-border);
+  background-color: var(--background-secondary);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.yd-capture:focus-within {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+.yd-capture input,
+.yd-capture input:hover,
+.yd-capture input:focus {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  font-size: 14px;
+  color: var(--text-normal);
+}
+
+.yd-capture-hint {
+  flex: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--background-modifier-border);
+  background-color: var(--background-primary);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ---------- 版式 ---------- */
+
+.yd-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "day day day day tasks tasks tasks tasks tasks cal cal cal"
+    "recent recent recent recent recent recent recent ink ink ink ink ink"
+    "links links links links links links links links links links links links";
+  column-gap: 28px;
+  row-gap: 30px;
+  align-items: start;
+}
+
+.yd-day { grid-area: day; }
+.yd-tasks { grid-area: tasks; }
+.yd-cal { grid-area: cal; }
+.yd-recent { grid-area: recent; }
+.yd-ink { grid-area: ink; }
+.yd-links { grid-area: links; }
+
+@container (max-width: 980px) {
+  .yd-grid {
+    grid-template-areas:
+      "day day day day day day cal cal cal cal cal cal"
+      "tasks tasks tasks tasks tasks tasks tasks tasks tasks tasks tasks tasks"
+      "recent recent recent recent recent recent ink ink ink ink ink ink"
+      "links links links links links links links links links links links links";
+  }
+}
+
+@container (max-width: 640px) {
+  .yan-desk {
+    padding: 20px 16px 36px;
+  }
+  .yd-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .yd-capture {
+    flex-basis: auto;
+  }
+  .yd-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "day" "tasks" "cal" "recent" "ink" "links";
+  }
+}
+
+.yd-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-family: var(--yd-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.yd-title small {
+  font-family: var(--font-interface);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text-faint);
+}
+
+.yd-empty {
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+/* ---------- 日签：整页唯一浮起来的一张纸 ---------- */
+
+.yd-day {
+  position: relative;
+  padding: 24px 20px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--background-modifier-border);
+  background-color: var(--background-primary);
+  box-shadow: var(--yd-sheet-shadow);
+  cursor: pointer;
+  transition: transform 160ms ease;
+}
+
+.yd-day:hover {
+  transform: translateY(-1px);
+}
+
+/* 台历撕页的齿孔 */
+.yd-day::before {
+  content: "";
+  position: absolute;
+  inset-inline: 14px;
+  top: 9px;
+  border-top: 1px dashed var(--background-modifier-border-hover);
+}
+
+.yd-day-ym {
+  padding-inline-end: 44px;
+  font-family: var(--yd-serif);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.yd-day-num {
+  margin: 6px 0 2px;
+  font-family: var(--yd-serif);
+  font-size: 104px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.yd-day-week {
+  font-family: var(--yd-serif);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.yd-day-lunar {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--background-modifier-border);
+  font-family: var(--yd-kai);
+  font-size: 15px;
+}
+
+.yd-day-term {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 节气印：竖排两个字。竖排时逻辑方向会转九十度，所以这里用 right，不用 inset-inline-end */
+.yd-seal {
+  position: absolute;
+  top: 24px;
+  right: 18px;
+  writing-mode: vertical-rl;
+  padding: 7px 5px;
+  border-radius: 3px;
+  background-color: var(--color-accent);
+  color: var(--background-primary);
+  font-family: var(--yd-serif);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  box-shadow:
+    inset 0 0 0 2px var(--color-accent),
+    inset 0 0 0 3px var(--background-primary);
+  transform: rotate(3deg);
+}
+
+.yd-weather {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.yd-weather svg {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  color: var(--color-orange);
+}
+
+.yd-weather-temp {
+  font-family: var(--yd-serif);
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.yd-weather-detail {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.yd-weather-empty {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+/* ---------- 待办 ---------- */
+
+.yd-group {
+  margin: 10px 0 2px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+}
+
+.yd-group-overdue {
+  color: var(--color-accent);
+}
+
+.yd-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 31px;
+}
+
+.yd-task input[type="checkbox"] {
+  flex: none;
+  margin: 0;
+}
+
+.yd-task-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.yan-desk .yd-task-text:hover {
+  color: var(--color-accent);
+}
+
+.yd-task-src {
+  max-width: 7em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.yd-task-due {
+  flex: none;
+  min-width: 3em;
+  text-align: end;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.yd-task-due.is-late {
+  color: var(--color-accent);
+}
+
+.yd-task.is-done .yd-task-text {
+  text-decoration: line-through;
+  color: var(--text-faint);
+}
+
+.yan-desk .yd-more {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--background-modifier-border-hover);
+  text-underline-offset: 3px;
+}
+
+/* ---------- 月历 ---------- */
+
+.yan-desk .yd-cal-name:hover {
+  color: var(--color-accent);
+}
+
+.yd-cal-nav {
+  display: flex;
+  gap: 2px;
+}
+
+.yd-cal-nav button,
+.yd-cal td button {
+  height: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.yd-cal-nav button {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 15px;
+  color: var(--text-faint);
+}
+
+.yd-cal-nav button:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.yd-cal table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.yd-cal th {
+  padding-bottom: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.yd-cal td {
+  position: relative;
+  height: 40px;
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.yd-cal td button {
+  display: block;
+  width: 34px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 3px 0;
+  border-radius: 5px;
+}
+
+.yd-cal td button:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.yd-cal td b {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.yd-cal td small {
+  display: block;
+  font-size: 9.5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: var(--text-faint);
+}
+
+.yd-cal td.is-out {
+  opacity: 0.35;
+}
+
+.yd-cal td.is-fest small {
+  color: var(--color-accent);
+}
+
+/* 有日记的日子，右上角一个小墨点 */
+.yd-cal td.has-note::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* 今天：一方朱砂印 */
+.yd-cal td.is-today button,
+.yd-cal td.is-today button:hover {
+  background-color: var(--color-accent);
+  color: var(--background-primary);
+  box-shadow:
+    inset 0 0 0 1.5px var(--color-accent),
+    inset 0 0 0 2.5px var(--background-primary);
+}
+
+.yd-cal td.is-today small {
+  color: var(--background-primary);
+}
+
+.yd-cal td.is-today.has-note::after {
+  background-color: var(--background-primary);
+}
+
+/* ---------- 最近在写 ---------- */
+
+.yd-recent-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px dotted var(--background-modifier-border-hover);
+}
+
+.yd-title + .yd-recent-row {
+  border-top: none;
+}
+
+.yd-recent-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.yan-desk .yd-recent-row:hover .yd-recent-name {
+  color: var(--color-accent);
+}
+
+.yd-recent-folder {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.yd-recent-time {
+  flex: none;
+  min-width: 4.5em;
+  text-align: end;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ---------- 墨迹：墨分五色 ---------- */
+
+.yd-ink-months,
+.yd-ink-cells {
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 4px;
+  max-width: 380px;
+}
+
+.yd-ink-months {
+  margin: 4px 0;
+  font-size: 10px;
+  white-space: nowrap;
+  color: var(--text-faint);
+}
+
+.yd-ink-cells {
+  grid-template-rows: repeat(7, auto);
+  grid-auto-flow: column;
+}
+
+.yd-ink-cells span {
+  aspect-ratio: 1;
+  border-radius: 2px;
+}
+
+.yd-ink-cells .is-future {
+  background: none;
+}
+
+.yan-desk .yd-l0 { background-color: color-mix(in srgb, var(--text-normal) 7%, transparent); }
+.yan-desk .yd-l1 { background-color: color-mix(in srgb, var(--text-normal) 20%, transparent); }
+.yan-desk .yd-l2 { background-color: color-mix(in srgb, var(--text-normal) 38%, transparent); }
+.yan-desk .yd-l3 { background-color: color-mix(in srgb, var(--text-normal) 62%, transparent); }
+.yan-desk .yd-l4 { background-color: color-mix(in srgb, var(--text-normal) 88%, transparent); }
+
+.yd-ink-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-family: var(--yd-kai);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.yd-ink-legend em {
+  margin-inline-end: 6px;
+  font-style: normal;
+}
+
+.yd-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.yd-ink-sum {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.yd-ink-sum b {
+  font-family: var(--yd-serif);
+  font-size: 15px;
+  color: var(--text-normal);
+}
+
+/* ---------- 常用 ---------- */
+
+.yd-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.yd-links:empty {
+  display: none;
+}
+
+.yd-links-label {
+  margin-inline-end: 6px;
+  font-family: var(--yd-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.yd-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+  background-color: var(--background-primary);
+  box-shadow: var(--yd-chip-shadow);
+  font-family: var(--yd-serif);
+  font-size: 14px;
+  transition: transform 120ms ease;
+}
+
+.yan-desk .yd-link:hover {
+  transform: translateY(-1px);
+  color: var(--color-accent);
+}
+
+.yd-link small {
+  font-family: var(--font-interface);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.yd-link.is-missing {
+  border-style: dashed;
+  box-shadow: none;
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yd-day,
+  .yd-link {
+    transition: none;
+  }
+  .yd-day:hover,
+  .yan-desk .yd-link:hover {
+    transform: none;
+  }
+}

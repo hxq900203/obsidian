@@ -70,7 +70,7 @@ settings:
     -
         id: yan-width
         title: 行宽
-        description: 需要在 Obsidian 设置里打开「缩减栏宽」才生效
+        description: 需要在 Obsidian「设置 → 编辑器」里打开「限制行宽」才生效
         type: class-select
         allowEmpty: false
         default: yan-width-medium
