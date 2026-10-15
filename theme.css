@@ -1,6 +1,6 @@
 /*
  * 砚 Yan —— 一套为中文读写设计的 Obsidian 主题
- * 宣纸为底，松烟墨为字，一点朱砂作印。
+ * 窗口是一张书案，侧边栏和笔记是放在案上的纸；松烟墨为字，一点朱砂作印。
  *
  * 目录
  *   1. Style Settings 选项
@@ -8,15 +8,15 @@
  *   3. 亮色「宣纸」
  *   4. 暗色「夜砚」
  *   5. 强调色、正文字体、行宽的可选方案
- *   6. 正文排版
- *   7. 标题与朱砂印
- *   8. 链接、强调、高亮
- *   9. 引用、提示框
- *  10. 列表与待办
- *  11. 表格、分隔线
- *  12. 代码
- *  13. 标签
- *  14. 界面
+ *   6. 书案与岛台布局
+ *   7. 标签页、侧边栏、状态栏、空白页
+ *   8. 正文排版
+ *   9. 标题与朱砂印
+ *  10. 链接、强调、高亮
+ *  11. 引用、提示框
+ *  12. 列表与待办
+ *  13. 表格、分隔线
+ *  14. 代码
  *  15. 纸张纹理
  */
 
@@ -27,6 +27,12 @@
 name: 砚 Yan
 id: yan-theme
 settings:
+    -
+        id: yan-flat
+        title: 平铺布局
+        description: 关掉书案效果，侧边栏和笔记不再悬浮，恢复成一整块
+        type: class-toggle
+        default: false
     -
         id: yan-body-font
         title: 正文字体
@@ -103,12 +109,19 @@ body {
   --font-text-theme: var(--yan-sans);
   --font-monospace-theme: var(--yan-mono);
 
-  --radius-s: 3px;
-  --radius-m: 6px;
-  --radius-l: 10px;
-  --radius-xl: 14px;
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 12px;
+  --radius-xl: 16px;
 
-  --file-line-width: 42em;
+  /* 书案布局：纸与纸之间的缝、纸的圆角 */
+  --yan-gap: 8px;
+  --yan-island-radius: 12px;
+  /* 书案底边那一条的高度，和左下角库名那一栏一样高 */
+  --yan-dock-height: 42px;
+
+  /* 行宽按正文字号算，代码行、标题行字号不同也不会变宽变窄 */
+  --file-line-width: calc(var(--font-text-size) * 42);
   --p-spacing: 1rem;
 
   /* 标题：宋体，只靠字号和字重分层，不用彩色 */
@@ -142,24 +155,38 @@ body {
   --h6-color: var(--text-muted);
 
   --inline-title-font: var(--yan-serif);
-  --inline-title-size: 1.9em;
+  --inline-title-size: 2.25em;
   --inline-title-weight: 700;
   --inline-title-line-height: 1.3;
 
+  --link-color: var(--text-normal);
+  --link-color-hover: var(--color-accent);
+  --link-external-color: var(--text-normal);
+  --link-external-color-hover: var(--color-accent);
+  --link-unresolved-color: var(--text-muted);
+  --link-unresolved-decoration-color: var(--text-faint);
   --link-decoration-thickness: 1px;
   --link-unresolved-opacity: 1;
   --link-unresolved-decoration-style: dotted;
 
-  --blockquote-border-thickness: 2px;
+  --blockquote-border-thickness: 0px;
   --blockquote-font-style: normal;
+  --blockquote-color: var(--yan-quote-color);
 
   --callout-border-width: 0px;
-  --callout-radius: var(--radius-s);
-  --callout-padding: 12px 16px 12px 20px;
+  --callout-radius: var(--radius-m);
+  --callout-padding: 12px 18px 14px;
   --callout-title-weight: 600;
+  --callout-quote: var(--color-base-60);
 
   --checkbox-radius: 3px;
+  --checkbox-color: var(--color-accent);
+  --checkbox-color-hover: var(--color-accent-1);
+  --checkbox-border-color: var(--text-faint);
+  --checkbox-border-color-hover: var(--color-accent);
+  --checkbox-marker-color: var(--background-primary);
   --checklist-done-decoration: line-through;
+  --checklist-done-color: var(--text-faint);
 
   --table-border-width: 0px;
   --table-header-background: transparent;
@@ -173,10 +200,11 @@ body {
   --tag-color-hover: var(--color-accent);
   --tag-radius: 3px;
   --tag-size: 0.82em;
+  --tag-weight: 500;
   --tag-padding-x: 0.45em;
   --tag-padding-y: 0.15em;
 
-  --code-radius: var(--radius-s);
+  --code-radius: var(--radius-m);
   --code-size: 0.875em;
   --code-comment: var(--text-faint);
   --code-function: var(--color-orange);
@@ -195,8 +223,6 @@ body {
   --graph-node-attachment: var(--color-orange);
   --graph-node-unresolved: var(--text-faint);
   --graph-line: var(--color-base-35);
-
-  --callout-quote: var(--color-base-60);
 }
 
 /* ========== 3. 亮色「宣纸」 ========== */
@@ -210,18 +236,20 @@ body {
   --mono-0: #fffdf8;
   --mono-100: #2a2016;
 
-  --color-base-00: #f5f1e8;
-  --color-base-05: #f2eee4;
-  --color-base-10: #eee9de;
-  --color-base-20: #eae4d7;
-  --color-base-25: #e2dbcc;
-  --color-base-30: #d9d1c1;
-  --color-base-35: #ccc3b1;
-  --color-base-40: #b6ad9a;
-  --color-base-50: #968f81;
+  /* 00 是笔记纸，20 是侧边栏的纸，书案在 --yan-desk */
+  --color-base-00: #fbf8f2;
+  --color-base-05: #f8f5ee;
+  --color-base-10: #f3efe6;
+  --color-base-20: #f4f0e7;
+  --color-base-25: #eae5da;
+  --color-base-30: #e0d9cb;
+  --color-base-35: #d3cbbb;
+  --color-base-40: #bdb4a2;
+  --color-base-50: #979083;
   --color-base-60: #7d776b;
   --color-base-70: #66615a;
   --color-base-100: #2b2925;
+  --yan-desk: #e2dccf;
 
   /* 中国传统色，压低饱和度：朱砂、赭石、藤黄、竹青、石青、黛蓝、藤紫、胭脂 */
   --color-red: #ae3a2c;
@@ -243,10 +271,18 @@ body {
 
   --text-on-accent: #fffdf8;
   --text-selection: color-mix(in oklch, var(--color-accent) 16%, transparent);
-  --tag-background: transparent;
   --text-highlight-bg: rgba(214, 168, 60, 0.38);
+  --tag-background: transparent;
   --yan-quote-color: #4c4840;
   --yan-rule-strong: var(--color-base-60);
+  /* 代码块是一块深色的砚面 */
+  --yan-slab: #2b2825;
+
+  --yan-island-shadow: 0 0 0 1px rgba(70, 52, 28, 0.05), 0 1px 2px rgba(70, 52, 28, 0.05),
+    0 6px 18px -8px rgba(70, 52, 28, 0.16);
+  --yan-sheet-shadow: 0 0 0 1px rgba(70, 52, 28, 0.06), 0 1px 3px rgba(70, 52, 28, 0.05),
+    0 22px 44px -18px rgba(70, 52, 28, 0.28);
+  --yan-chip-shadow: 0 0 0 1px rgba(70, 52, 28, 0.06), 0 1px 3px rgba(70, 52, 28, 0.1);
 
   --shadow-s: 0 1px 2px rgba(58, 44, 24, 0.05), 0 4px 10px rgba(58, 44, 24, 0.06),
     0 14px 30px rgba(58, 44, 24, 0.07);
@@ -265,10 +301,10 @@ body {
   --mono-0: #000000;
   --mono-100: #fff8ec;
 
-  --color-base-00: #1e1d1b;
-  --color-base-05: #21201e;
-  --color-base-10: #252321;
-  --color-base-20: #191816;
+  --color-base-00: #1f1e1c;
+  --color-base-05: #222120;
+  --color-base-10: #272523;
+  --color-base-20: #1a1918;
   --color-base-25: #2b2926;
   --color-base-30: #34312d;
   --color-base-35: #403c37;
@@ -277,6 +313,7 @@ body {
   --color-base-60: #8f887c;
   --color-base-70: #aba497;
   --color-base-100: #e4ded2;
+  --yan-desk: #121110;
 
   --color-red: #de6f5a;
   --color-orange: #d08a4e;
@@ -297,10 +334,15 @@ body {
 
   --text-on-accent: #fff8ec;
   --text-selection: color-mix(in oklch, var(--color-accent) 26%, transparent);
-  --tag-background: transparent;
   --text-highlight-bg: rgba(196, 158, 62, 0.45);
+  --tag-background: transparent;
   --yan-quote-color: #cbc4b7;
   --yan-rule-strong: var(--color-base-60);
+  --yan-slab: #151413;
+
+  --yan-island-shadow: 0 0 0 1px rgba(255, 248, 236, 0.04), 0 8px 22px -10px rgba(0, 0, 0, 0.6);
+  --yan-sheet-shadow: 0 0 0 1px rgba(255, 248, 236, 0.06), 0 24px 48px -18px rgba(0, 0, 0, 0.75);
+  --yan-chip-shadow: 0 0 0 1px rgba(255, 248, 236, 0.06), 0 1px 3px rgba(0, 0, 0, 0.4);
 
   --shadow-s: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.24),
     0 14px 30px rgba(0, 0, 0, 0.3);
@@ -339,13 +381,175 @@ body.yan-body-kai {
 }
 
 body.yan-width-narrow {
-  --file-line-width: 36em;
+  --file-line-width: calc(var(--font-text-size) * 36);
 }
 body.yan-width-wide {
-  --file-line-width: 50em;
+  --file-line-width: calc(var(--font-text-size) * 50);
 }
 
-/* ========== 6. 正文排版 ========== */
+/* ========== 6. 书案与岛台布局 ========== */
+
+/* 整个窗口是书案；手机屏幕太窄，不用这种布局 */
+body:not(.is-mobile):not(.yan-flat) {
+  --titlebar-background: var(--yan-desk);
+  --titlebar-background-focused: var(--yan-desk);
+  --tab-container-background: var(--yan-desk);
+  --ribbon-background: var(--yan-desk);
+  --ribbon-background-collapsed: var(--yan-desk);
+  --divider-color: transparent;
+  --tab-outline-color: transparent;
+  --tab-outline-width: 0px;
+  --tab-curve: 0px;
+  --tab-radius: var(--radius-m);
+  --tab-radius-active: var(--radius-m);
+  --file-header-border: none;
+}
+body:not(.is-mobile):not(.yan-flat) :is(.workspace, .workspace-split, .workspace-tabs, .workspace-ribbon, .workspace-sidedock-vault-profile) {
+  background-color: var(--yan-desk);
+  border-color: transparent;
+}
+
+/* 每一块内容区都是一张放在案上的纸 */
+body:not(.is-mobile):not(.yan-flat) .workspace-tabs .workspace-tab-container {
+  border-radius: var(--yan-island-radius);
+  overflow: hidden;
+}
+body:not(.is-mobile):not(.yan-flat) .mod-sidedock .workspace-tabs .workspace-tab-container {
+  background-color: var(--background-secondary);
+  box-shadow: var(--yan-island-shadow);
+}
+body:not(.is-mobile):not(.yan-flat) .mod-left-split .workspace-tabs .workspace-tab-container {
+  margin: 0;
+}
+body:not(.is-mobile):not(.yan-flat) .mod-right-split .workspace-tabs .workspace-tab-container {
+  margin: 0 var(--yan-gap) var(--yan-dock-height) 0;
+}
+/* 笔记那张纸最白，投影也最深 */
+body:not(.is-mobile):not(.yan-flat) .mod-root .workspace-tabs .workspace-tab-container {
+  margin: 0 var(--yan-gap) var(--yan-dock-height);
+  background-color: var(--background-primary);
+  box-shadow: var(--yan-sheet-shadow);
+}
+body:not(.is-mobile):not(.yan-flat) .mod-root .workspace-leaf-content,
+body:not(.is-mobile):not(.yan-flat) .mod-root .view-header {
+  background-color: var(--background-primary);
+}
+
+/* ========== 7. 标签页、侧边栏、状态栏、空白页 ========== */
+
+/* 标签页：放在书案上的小纸签 */
+body:not(.is-mobile):not(.yan-flat) .workspace-tab-header-container {
+  border-bottom: none;
+}
+body:not(.is-mobile):not(.yan-flat) .workspace .mod-root .workspace-tab-header {
+  padding: 5px 3px 6px;
+  background-color: transparent;
+  box-shadow: none;
+}
+body:not(.is-mobile):not(.yan-flat) .mod-root .workspace-tab-header-inner {
+  padding-inline: 12px 8px;
+  border-radius: var(--radius-m);
+  transition: background-color 120ms ease;
+}
+body:not(.is-mobile):not(.yan-flat) .mod-root .workspace-tab-header.is-active .workspace-tab-header-inner {
+  background-color: var(--background-primary);
+  box-shadow: var(--yan-chip-shadow);
+}
+body:not(.is-mobile):not(.yan-flat) .mod-root .workspace-tab-header:not(.is-active):hover .workspace-tab-header-inner {
+  background-color: color-mix(in oklch, var(--mono-100) 5%, transparent);
+}
+body:not(.is-mobile):not(.yan-flat) .workspace-split.mod-primary-split .workspace-sidedock-vault-profile {
+  background-color: var(--yan-desk);
+  border-top: none;
+}
+
+/* 笔记顶部的导航条安静一点 */
+/* 笔记属性区收敛成一块小字说明 */
+.metadata-properties-heading {
+  font-size: var(--font-ui-smaller);
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+body {
+  --metadata-label-text-color: var(--text-faint);
+}
+
+.view-header-title {
+  font-family: var(--yan-serif);
+  letter-spacing: 0.02em;
+}
+
+/* 文件列表：当前文件像一张浮起的纸签，左边一方朱砂小印 */
+.nav-file-title,
+.tree-item-self {
+  position: relative;
+}
+body:not(.is-mobile) :is(.nav-file-title, .tree-item-self).is-active {
+  background-color: var(--background-primary);
+  box-shadow: var(--yan-chip-shadow);
+  color: var(--text-normal);
+}
+:is(.nav-file-title, .tree-item-self).is-active::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 5px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 1px;
+  background-color: var(--color-accent);
+}
+:is(.nav-file-title, .tree-item-self) {
+  transition: background-color 120ms ease;
+}
+
+/* 状态栏放在书案底边，和左下角的库名排成一条 */
+body:not(.is-mobile):not(.yan-flat) .status-bar {
+  bottom: 0;
+  height: var(--yan-dock-height);
+  inset-inline-end: var(--yan-gap);
+  align-items: center;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--text-faint);
+}
+
+/* 空白标签页：正中盖一方「砚」字朱砂印 */
+.empty-state-container::before {
+  content: "砚";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 28px;
+  border-radius: 6px;
+  background-color: var(--color-accent);
+  color: var(--background-primary);
+  font-family: var(--yan-serif);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 64px;
+  text-align: center;
+  box-shadow:
+    inset 0 0 0 3px var(--color-accent),
+    inset 0 0 0 5px var(--background-primary);
+  transform: rotate(-4deg);
+}
+.empty-state-title {
+  font-family: var(--yan-serif);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+/* 细一点的滚动条 */
+body:not(.native-scrollbars) ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* ========== 8. 正文排版 ========== */
 
 /* 中文需要更松的行距 */
 .markdown-source-view,
@@ -368,40 +572,65 @@ body.yan-width-wide {
   border-inline-start-color: var(--color-accent);
 }
 
-/* ========== 7. 标题与朱砂印 ========== */
+/* ========== 9. 标题与朱砂印 ========== */
 
+/* 笔记标题像书的题目页：大号宋体，下面一道细线，末尾盖一方朱砂印 */
 .inline-title {
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid var(--background-modifier-border);
 }
-
-/* 一级标题末尾盖一方小小的朱砂印 */
-.markdown-rendered h1::after,
-.markdown-source-view.mod-cm6 .cm-line.HyperMD-header-1::after {
+.inline-title::after,
+body:not(.show-inline-title) .markdown-rendered h1::after,
+body:not(.show-inline-title) .markdown-source-view.mod-cm6 .cm-line.HyperMD-header-1::after {
   content: "";
   display: inline-block;
-  width: 0.34em;
-  height: 0.34em;
-  margin-inline-start: 0.42em;
+  width: 0.36em;
+  height: 0.36em;
+  margin-inline-start: 0.4em;
   vertical-align: 0.2em;
-  border-radius: 1.5px;
+  border-radius: 2px;
   background-color: var(--color-accent);
   box-shadow:
-    inset 0 0 0 0.045em var(--color-accent),
-    inset 0 0 0 0.085em var(--background-primary);
+    inset 0 0 0 0.04em var(--color-accent),
+    inset 0 0 0 0.08em var(--background-primary);
   transform: rotate(-4deg);
 }
 
-/* ========== 8. 链接、强调、高亮 ========== */
+/* 二级标题：下面一道贯穿的细线，像书里的章节分隔 */
+.markdown-rendered h2,
+.markdown-source-view.mod-cm6 .cm-line.HyperMD-header-2 {
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+/* 三级标题：左边悬着一个小方点 */
+.markdown-rendered h3,
+.markdown-source-view.mod-cm6 .cm-line.HyperMD-header-3 {
+  position: relative;
+}
+.markdown-rendered h3::before,
+.markdown-source-view.mod-cm6 .cm-line.HyperMD-header-3::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -0.85em;
+  top: calc(var(--h3-line-height) * 0.5em - 0.14em);
+  width: 0.28em;
+  height: 0.28em;
+  border-radius: 1px;
+  background-color: color-mix(in oklch, var(--color-accent) 70%, transparent);
+  transition: opacity 120ms ease;
+}
+/* 鼠标移上去时左边会出现折叠箭头，让开位置 */
+.markdown-rendered h3:hover::before,
+.markdown-source-view.mod-cm6 .cm-line.HyperMD-header-3:hover::before,
+.markdown-rendered h3:has(.heading-collapse-indicator.is-collapsed)::before {
+  opacity: 0;
+}
+
+/* ========== 10. 链接、强调、高亮 ========== */
 
 /* 链接是墨色字加一道淡淡的朱砂下划线，悬停时整体变朱砂 */
-body {
-  --link-color: var(--text-normal);
-  --link-color-hover: var(--color-accent);
-  --link-external-color: var(--text-normal);
-  --link-external-color-hover: var(--color-accent);
-  --link-unresolved-color: var(--text-muted);
-  --link-unresolved-decoration-color: var(--text-faint);
-}
 .markdown-rendered .internal-link:not(.is-unresolved),
 .markdown-rendered .external-link,
 .markdown-source-view.mod-cm6 .cm-hmd-internal-link .cm-underline,
@@ -455,54 +684,74 @@ body {
   box-decoration-break: clone;
 }
 
-/* ========== 9. 引用、提示框 ========== */
+/* ========== 11. 引用、提示框 ========== */
 
-/* 引用用楷体，像书页边上的批注 */
-body {
-  --blockquote-border-color: var(--color-base-40);
-  --blockquote-color: var(--yan-quote-color);
-}
+/* 引用用楷体，左上角一个淡朱砂色的大「 */
 .markdown-rendered blockquote,
 .markdown-source-view.mod-cm6 .HyperMD-quote {
   font-family: var(--yan-kai);
   font-size: 1.05em;
 }
+.markdown-rendered blockquote {
+  position: relative;
+}
+.markdown-rendered blockquote::before,
+.markdown-source-view.mod-cm6 .HyperMD-quote:not(.HyperMD-quote + .HyperMD-quote)::after {
+  content: "「";
+  position: absolute;
+  inset-inline-start: -0.35em;
+  top: -0.3em;
+  font-family: var(--yan-serif);
+  font-size: 2.4em;
+  line-height: 1;
+  color: color-mix(in oklch, var(--color-accent) 60%, transparent);
+  pointer-events: none;
+}
+.markdown-source-view.mod-cm6 .HyperMD-quote:not(.HyperMD-quote + .HyperMD-quote)::after {
+  inset-inline-start: 0.07em;
+  top: -0.06em;
+}
 
-/* 提示框：左侧一道色条，底色只淡淡染一层 */
+/* 提示框像博物馆的展签：细边框、很淡的底色、标题下一道细线 */
 .callout {
-  border-inline-start: 3px solid var(--callout-color);
-  border-start-start-radius: 0;
-  border-end-start-radius: 0;
-  background-color: color-mix(in oklch, var(--callout-color) 6%, transparent);
+  border: 1px solid color-mix(in oklch, var(--callout-color) 24%, transparent);
+  background-color: color-mix(in oklch, var(--callout-color) 4%, transparent);
 }
-.callout-content > :first-child {
-  margin-block-start: 0.4em;
+.callout-title {
+  padding-bottom: 0.55em;
+  border-bottom: 1px solid color-mix(in oklch, var(--callout-color) 16%, transparent);
 }
-.callout-content > :last-child {
-  margin-block-end: 0.2em;
+.callout.is-collapsed .callout-title {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 .callout-title-inner {
   font-family: var(--yan-serif);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+}
+.callout-content > :first-child {
+  margin-block-start: 0.6em;
+}
+.callout-content > :last-child {
+  margin-block-end: 0.1em;
 }
 
-/* ========== 10. 列表与待办 ========== */
+/* ========== 12. 列表与待办 ========== */
 
-body {
-  --checkbox-color: var(--color-accent);
-  --checkbox-color-hover: var(--color-accent-1);
-  --checkbox-border-color: var(--text-faint);
-  --checkbox-border-color-hover: var(--color-accent);
-  --checkbox-marker-color: var(--background-primary);
-  --checklist-done-color: var(--text-faint);
-}
 .markdown-rendered li.is-checked,
 .markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="x"],
 .markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="X"] {
   text-decoration-color: var(--text-faint);
 }
 
-/* ========== 11. 表格、分隔线 ========== */
+/* 有序列表的序号用宋体 */
+.markdown-rendered ol > li::marker,
+.markdown-source-view.mod-cm6 .cm-formatting-list-ol {
+  font-family: var(--yan-serif);
+  color: var(--text-muted);
+}
+
+/* ========== 13. 表格、分隔线 ========== */
 
 /* 表格按书籍排版：没有竖线，上下两道粗线，表头下一道细线 */
 .markdown-rendered table,
@@ -544,35 +793,63 @@ body {
     1.6em 0 0 var(--text-faint);
 }
 
-/* ========== 12. 代码 ========== */
+/* ========== 14. 代码 ========== */
 
+/* 代码块是一块深色的砚面，亮色、暗色模式下都一样深 */
 .markdown-rendered pre,
-.markdown-source-view.mod-cm6 .cm-preview-code-block {
-  border: 1px solid var(--background-modifier-border);
+.markdown-source-view.mod-cm6 .HyperMD-codeblock,
+.markdown-source-view.mod-cm6 .code-block-flair {
+  --code-background: var(--yan-slab);
+  --code-normal: #e6dfd2;
+  --code-comment: #8f877a;
+  --code-function: #e0a76b;
+  --code-important: #e58c78;
+  --code-keyword: #9db4d6;
+  --code-operator: #b5ac9d;
+  --code-property: #8ec2c2;
+  --code-punctuation: #b5ac9d;
+  --code-string: #a8c8a0;
+  --code-tag: #e58c78;
+  --code-value: #c3a8da;
+  --text-selection: rgba(230, 223, 210, 0.18);
+  --icon-color: #8f877a;
+  --icon-color-hover: #e6dfd2;
+  --background-modifier-hover: rgba(255, 248, 236, 0.08);
+  --text-muted: #8f877a;
+  color: var(--code-normal);
 }
-
-/* ========== 13. 标签 ========== */
-
-.markdown-rendered .tag,
-.markdown-source-view.mod-cm6 .cm-hashtag {
-  font-weight: 500;
+.markdown-rendered pre {
+  position: relative;
+  padding: 1.1em 1.3em;
 }
-
-/* ========== 14. 界面 ========== */
-
-/* 当前文件左侧一道朱砂竖线 */
-.nav-file-title.is-active,
-.tree-item-self.is-active {
-  box-shadow: inset 2px 0 0 var(--color-accent);
-  border-start-start-radius: 0;
-  border-end-start-radius: 0;
+/* 右上角写明是哪种语言 */
+.markdown-rendered pre[class*="language-"]::before {
+  position: absolute;
+  top: 0.7em;
+  inset-inline-end: 1em;
+  font-family: var(--yan-mono);
+  font-size: 0.75em;
+  letter-spacing: 0.04em;
+  color: #8f877a;
+  transition: opacity 120ms ease;
 }
-
-/* 细一点的滚动条 */
-body:not(.native-scrollbars) ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+.markdown-rendered pre:hover::before {
+  opacity: 0;
 }
+.markdown-rendered pre.language-python::before { content: "python"; }
+.markdown-rendered pre:is(.language-js, .language-javascript)::before { content: "javascript"; }
+.markdown-rendered pre:is(.language-ts, .language-typescript)::before { content: "typescript"; }
+.markdown-rendered pre:is(.language-sh, .language-bash, .language-shell, .language-zsh)::before { content: "shell"; }
+.markdown-rendered pre.language-json::before { content: "json"; }
+.markdown-rendered pre:is(.language-yaml, .language-yml)::before { content: "yaml"; }
+.markdown-rendered pre.language-html::before { content: "html"; }
+.markdown-rendered pre.language-css::before { content: "css"; }
+.markdown-rendered pre.language-sql::before { content: "sql"; }
+.markdown-rendered pre.language-java::before { content: "java"; }
+.markdown-rendered pre.language-go::before { content: "go"; }
+.markdown-rendered pre.language-rust::before { content: "rust"; }
+.markdown-rendered pre:is(.language-c, .language-cpp)::before { content: "c / c++"; }
+.markdown-rendered pre:is(.language-md, .language-markdown)::before { content: "markdown"; }
 
 /* ========== 15. 纸张纹理 ========== */
 
